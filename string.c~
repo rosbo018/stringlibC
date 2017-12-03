@@ -1,0 +1,19 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void split(char *__string, char token){
+	int size = 0;
+	int *loc;
+	int numTokMatch = 0;
+	for (;*(__string+size) != '\0'; size++)
+		if(*(__string+size) == token){
+			numTokMatch++;
+			loc = realloc(loc, numTokMatch+1);
+			*(loc+numTokMatch) = size;
+		}
+}
+int main(){
+	char test[] = "string";
+	char x = 'x';
+	split(test, x);
+}
