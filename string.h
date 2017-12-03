@@ -15,9 +15,12 @@ typedef struct _string{
 	stringIter (*begin)(struct _string *);
 	int (*getSize)(struct _string *);
 	char *(*getRaw)(struct _string *);
+	char (index)(struct _string *, int);
 	void (*print)(struct _string *);
 	struct _string * (*substr)(struct _string *, int );
 	struct _string * (*subnstr)(struct _string *,int , int );
+	int (*find)(struct _string *, struct _string *);
+	int (*equals)(struct _string *, struct _string *);
 } string;
 
 
@@ -29,6 +32,7 @@ int _getSizeString(struct _string *);
 
 struct _string *_substr(struct _string *this, int end);
 struct _string *_subnstr(struct _string *this,int start, int end);
+int _equalsString(struct _string *this, struct _string *other);
 
 struct _string * newString();
 struct _string * newStringc(char *);

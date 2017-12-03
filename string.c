@@ -45,6 +45,7 @@ struct _string * newStringc(char *_set){
 	_new->substr = &_substr;
 	_new->subnstr = &_subnstr;
 	_new->print = &_printString;
+	_new->equals = &_equalsString;
 
 	_new->set(_new, _set);
 	return _new;
@@ -60,6 +61,7 @@ struct _string * newString(){
 	_new->substr = &_substr;
 	_new->subnstr = &_subnstr;
 	_new->print = &_printString;
+	_new->equals = &_equalsString;
 	return _new;
 }
 //get
@@ -113,7 +115,7 @@ struct _string *_substr(struct _string *this, int end){ //substr starting at 0
 	}
 }
 
-//substr starting at start
+	//substr starting at start
 struct _string *_subnstr(struct _string *this, int start, int end){ 
 	if(end > start && start >= 0 && end < this->getSize(this)){
 		struct _string *_new = newString();
@@ -125,6 +127,46 @@ struct _string *_subnstr(struct _string *this, int start, int end){
 		printf("substr out of bounds\n");
 		return NULL;
 	}
+}
+char _indexAt(struct _string *this, int index){
+	if(this->getSize(this)>=index)
+		return NULL;
+	return *(this->getRaw(this) + index);
+
+
+}
+
+int _equalsString(struct _string *this, struct _string *other){
+	if(this->getSize(this) != other->getSize(other))
+		return 0;
+	for(int i = 0; i < this->getSize(this); i++)
+		if(this->index(this, i) != other->index(other, i))
+			return 0;
+	return 1;
+			       
+}
+int *_findString(struct _string *this, struct _string *token){
+	int *results = malloc(sizeof(int));
+	*result = 0;
+	int t = 1;
+	if(token->getSize(token) > this->getSize(this))
+		return result;
+	for(int i = 0; i <this->getSize(this), i++){
+		if(this->index(this, i) == token->index(token, 0)){
+			t = 1;
+			for(int j = 0; j <token->getSize(token), j++){
+				if(this->index(this, i+j) != token->index(token, j))
+					t = 0;
+			}
+			if (t==1){
+				(*result)++;
+				result = realloc(result, (*result)+1);
+				*(result+(*result)) = i;
+			}
+		}
+	}
+	return result;
+
 }
 //deallocate
 void _deleteString(struct _string *this){
