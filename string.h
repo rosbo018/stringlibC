@@ -1,6 +1,10 @@
 #ifndef STRING_H
 #define STRING_H
 
+struct Tuple{
+    void *A;
+    void *B;
+};
 typedef struct _stringIter{
 	char *rawString;
 	int start, step, size;
@@ -15,7 +19,7 @@ typedef struct _string{
 	stringIter (*begin)(struct _string *);
 	int (*getSize)(struct _string *);
 	char *(*getRaw)(struct _string *);
-	char (index)(struct _string *, int);
+	char (*index)(struct _string *, int);
 	void (*print)(struct _string *);
 	struct _string * (*substr)(struct _string *, int );
 	struct _string * (*subnstr)(struct _string *,int , int );
@@ -42,4 +46,14 @@ struct _stringIter *newStringIter(char *, int, int, int);
 char _stringIterNext(struct _stringIter *);
 void charCopy(char *src, char *dest, int n);
 void charnCopy(char *src, char *dest, int start, int n);
+char _indexAt(struct _string *this, int index);
+
+void*
+addItemSpace(void *lst, int numElems);
+
+struct Tuple*
+findCharLocations(struct _string *this, char c);
+
+struct Tuple *
+newTuple(void *a, void*b);
 #endif

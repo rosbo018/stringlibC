@@ -10,6 +10,7 @@ struct _stringIter *newStringIter(char *rawString, int start, int step, int size
 	_new->step = step;
 	_new->start = start;
 	_new->rawString = rawString;
+    return _new;
 	
 
 }
@@ -46,6 +47,7 @@ struct _string * newStringc(char *_set){
 	_new->subnstr = &_subnstr;
 	_new->print = &_printString;
 	_new->equals = &_equalsString;
+    _new->index = &_indexAt;
 
 	_new->set(_new, _set);
 	return _new;
@@ -95,8 +97,7 @@ stringIter *_getStringIter(string *this){
 //applications
 void _concatString(struct _string *this, struct _string *other){//appends
 	printf("this %d, that %d\n", this->size, other->size);
-	int x = 0;
-        this->rawString = realloc(this->rawString,  this->size + other->size + 1);
+    this->rawString = realloc(this->rawString,  this->size + other->size + 1);
 	int i = this->size;
 	for(int j = 0; j < other->size; j++, i++)
 		*(this->rawString+i) = *(other->rawString+j);
@@ -145,29 +146,56 @@ int _equalsString(struct _string *this, struct _string *other){
 	return 1;
 			       
 }
-int *_findString(struct _string *this, struct _string *token){
-	int *results = malloc(sizeof(int));
-	*result = 0;
-	int t = 1;
-	if(token->getSize(token) > this->getSize(this))
-		return result;
-	for(int i = 0; i <this->getSize(this), i++){
-		if(this->index(this, i) == token->index(token, 0)){
-			t = 1;
-			for(int j = 0; j <token->getSize(token), j++){
-				if(this->index(this, i+j) != token->index(token, j))
-					t = 0;
-			}
-			if (t==1){
-				(*result)++;
-				result = realloc(result, (*result)+1);
-				*(result+(*result)) = i;
-			}
-		}
-	}
-	return result;
+int
+_findString(struct _string *this, struct _string *other)
+{
+    char *thisTemp = this->getRaw(this);
+    char *otherTemp = other->getRaw(other);
+    if (other->size > this->size)
+        return 0;
+
+    for (int index = 0; index < (this->size); index++){
+        if (*(thisTemp+index) == *(otherTemp+index)){
+            return 1;
+        }
+    }
+    return 0;
+
+
 
 }
+struct Tuple *
+newTuple(void *a, void*b){
+    struct Tuple *t;
+    t = malloc(sizeof(*t));
+    t->A = a;
+    t->B = b;
+    return t;
+}
+
+struct Tuple*
+findCharLocations(struct _string *this, char c)
+{
+    int *locations = malloc(sizeof(*locations));
+    char *raw = this->rawString;
+    int numLocCount = 0;
+    int index = 0;
+    for (char temp; index < this->size; index++){
+        temp = *(raw+index);
+        if(c == temp){
+            *(locations+numLocCount) = index;
+            locations = addItemSpace(locations, numLocCount++);
+        }
+    }
+    return newTuple(locations, &numLocCount);
+}
+void*
+addItemSpace(void *lst, int numElems)
+{
+    lst = realloc(lst, sizeof(*lst)*(numElems+1));
+    return lst;
+}
+
 //deallocate
 void _deleteString(struct _string *this){
 	free(this->rawString);
@@ -195,12 +223,16 @@ void charnCopy(char *dest, char *src, int start, int n){
 int main(){
 	string *test = newStringc("this");
 	string *test2 = newStringc("that");
-	test->concat(test, test2);
-	printf("%s\n", test->rawString);
-	string *sub = test->substr(test, 4);
-	sub->print(sub);
+    struct Tuple *x;
+    x = findCharLocations(test, 'i');
+    int *i = x->B;
+    int *locs = x->A;
+    for(int index = 0; index < (*i); index++){
+        printf("%d", *(locs+index));
+    }
+    fflush(stdin);
 
-	sub->delete(sub);
+
 	test->delete(test);
 	test2->delete(test2);
 }
