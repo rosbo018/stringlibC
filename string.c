@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "string.h"
+#include "../Ctuple/tuple.h"
 
 //string iteration section
 //new
@@ -11,9 +12,7 @@ struct _stringIter *newStringIter(char *rawString, int start, int step, int size
 	_new->start = start;
 	_new->rawString = rawString;
     return _new;
-	
-
-}
+};
 
 //application
 char _stringIterNext(struct _stringIter *this){
@@ -75,7 +74,7 @@ int _getSizeString(struct _string *this){
 }
 //print
 void _printString(struct _string *this){
-	printf("S:_%s_;size: %d", this->getRaw(this), this->getSize(this));
+	printf("\nS:_%s_;size: %d\n", this->getRaw(this), this->getSize(this));
 }
 //set
 void _setString(struct _string *this, char *_info){
@@ -118,6 +117,8 @@ struct _string *_substr(struct _string *this, int end){ //substr starting at 0
 
 	//substr starting at start
 struct _string *_subnstr(struct _string *this, int start, int end){ 
+    printf("substr= start: %d, end: %d", start, end);
+    fflush(stdout);
 	if(end > start && start >= 0 && end < this->getSize(this)){
 		struct _string *_new = newString();
 		_new->rawString = malloc((end - start)+1);
@@ -164,14 +165,6 @@ _findString(struct _string *this, struct _string *other)
 
 
 }
-struct Tuple *
-newTuple(void *a, void*b){
-    struct Tuple *t;
-    t = malloc(sizeof(*t));
-    t->A = a;
-    t->B = b;
-    return t;
-}
 
 struct Tuple*
 findCharLocations(struct _string *this, char c)
@@ -187,7 +180,39 @@ findCharLocations(struct _string *this, char c)
             locations = addItemSpace(locations, numLocCount++);
         }
     }
+    printf("num locations :%d\n", (numLocCount));
     return newTuple(locations, &numLocCount);
+}
+struct Tuple*
+split(struct _string *this, char c)
+{
+    struct Tuple *tuple = findCharLocations(this, c);
+    int numLocations;
+    numLocations = *((int *) tuple->B );
+    struct _string **splitStrings;
+    splitStrings= malloc(sizeof(*splitStrings) * (numLocations+1));
+    int *locations;
+    int start = 0;
+    int end;
+    locations = tuple->A;
+    if (numLocations == 0){
+        *splitStrings = this;
+        return newTuple(splitStrings, &start);
+    }
+    printf("n:%d\n", (numLocations));
+    printf("L:%d\n", *(locations));
+    for (int i = 0; i < numLocations; i++){
+        printf("iteration %d", i);
+        end = *(locations + i);
+        printf("end : %d\n", end);
+        *(splitStrings + i) = _subnstr(this, start, end);
+        _printString(*(splitStrings + i));
+    }
+
+    //return newTuple((void *)splitStrings,(void *) num);
+    return newTuple(NULL, NULL);
+
+
 }
 void*
 addItemSpace(void *lst, int numElems)
@@ -223,15 +248,12 @@ void charnCopy(char *dest, char *src, int start, int n){
 int main(){
 	string *test = newStringc("this");
 	string *test2 = newStringc("that");
-    struct Tuple *x;
-    x = findCharLocations(test, 'i');
-    int *i = x->B;
-    int *locs = x->A;
-    for(int index = 0; index < (*i); index++){
-        printf("%d", *(locs+index));
-    }
-    fflush(stdin);
+    int *i;
+    struct Tuple *Tup;
+    struct _string **list;
+    Tup = split(test,'h');
 
+    fflush(stdin);
 
 	test->delete(test);
 	test2->delete(test2);

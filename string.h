@@ -1,10 +1,6 @@
 #ifndef STRING_H
 #define STRING_H
 
-struct Tuple{
-    void *A;
-    void *B;
-};
 typedef struct _stringIter{
 	char *rawString;
 	int start, step, size;
@@ -54,6 +50,4 @@ addItemSpace(void *lst, int numElems);
 struct Tuple*
 findCharLocations(struct _string *this, char c);
 
-struct Tuple *
-newTuple(void *a, void*b);
 #endif
